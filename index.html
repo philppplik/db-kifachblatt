@@ -211,17 +211,23 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 function fmt(n){return n.toLocaleString("de-DE");}
 function pd(s){s=String(s);if(/^\d{8}$/.test(s))return new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));const d=new Date(s);return isNaN(d)?null:d}
 function fd(d,o){return d?d.toLocaleDateString("de-DE",o||{day:"2-digit",month:"2-digit"}):""}
+function segs(pts){const out=[];let c=[];pts.forEach(p=>{if(p){c.push(p)}else{if(c.length)out.push(c);c=[]}});if(c.length)out.push(c);return out}
 function spark(id,vals){
-  const max=Math.max(1,...vals),n=vals.length,W=200,H=34;
-  const pts=vals.map((v,i)=>[n>1?i*W/(n-1):W/2,H-3-(v/max)*(H-8)]);
-  const l=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
-  $(id).innerHTML=`<path d="${l} L${W},${H} L0,${H} Z" fill="#7040cd1f"/><path d="${l}" fill="none" stroke="#7040cd" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+  const m=vals.filter(v=>v!=null),max=Math.max(1,...m),n=vals.length,W=200,H=34;
+  const pts=vals.map((v,i)=>v==null?null:[n>1?i*W/(n-1):W/2,H-3-(v/max)*(H-8)]);
+  let o="";
+  segs(pts).forEach(sg=>{
+    if(sg.length===1){o+=`<circle cx="${sg[0][0].toFixed(1)}" cy="${sg[0][1].toFixed(1)}" r="2.5" fill="#7040cd"/>`;return}
+    const l=sg.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+    o+=`<path d="${l} L${sg[sg.length-1][0].toFixed(1)},${H} L${sg[0][0].toFixed(1)},${H} Z" fill="#7040cd1f"/><path d="${l}" fill="none" stroke="#7040cd" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+  });
+  $(id).innerHTML=o;
 }
 function delta(id,vals){
-  const el=$(id),n=vals.length;
-  if(n<14){el.innerHTML='<b>–</b>Trend ab 14 Tagen Daten';return}
-  const sm=a=>a.reduce((x,y)=>x+y,0),b=sm(vals.slice(-7)),a=sm(vals.slice(-14,-7));
-  if(!a){el.innerHTML='<b>–</b>Vorwoche ohne Daten';return}
+  const el=$(id),w=vals.slice(-14);
+  if(w.length<14||w.some(v=>v==null)){el.innerHTML='<b>–</b>Trend erst mit 14 gemessenen Tagen in Folge';return}
+  const sm=a=>a.reduce((x,y)=>x+y,0),b=sm(w.slice(7)),a=sm(w.slice(0,7));
+  if(!a){el.innerHTML='<b>–</b>Vorwoche ohne Aktivität';return}
   const p=Math.round((b-a)/a*100);
   el.innerHTML=`<b class="${p>=0?"up":""}">${p>=0?"+":""}${p} %</b>letzte 7 vs. vorherige 7 Tage`;
 }
@@ -233,21 +239,21 @@ function render(d){
     const end=pd(d.generated?d.generated.slice(0,10):rows[rows.length-1].raw)||rows[rows.length-1].d;
     const last=rows[rows.length-1].d,e=end>last?end:last,st=new Date(e);st.setDate(st.getDate()-29);
     const map={};rows.forEach(r=>map[r.d.toDateString()]=r);
-    ds=[];for(let t=new Date(st);t<=e;t.setDate(t.getDate()+1)){const k=t.toDateString();const dd=new Date(t);ds.push(map[k]||{d:dd,raw:"",users:0,sessions:0,views:0})}
+    ds=[];for(let t=new Date(st);t<=e;t.setDate(t.getDate()+1)){const k=t.toDateString();const dd=new Date(t);ds.push(map[k]||{d:dd,raw:"",users:null,sessions:null,views:null})}
   }
-  const sum=k=>ds.reduce((a,b)=>a+b[k],0);
+  const sum=k=>rows.reduce((a,b)=>a+b[k],0);
   $("kUsers").textContent=fmt(sum("users"));$("kSessions").textContent=fmt(sum("sessions"));$("kViews").textContent=fmt(sum("views"));
   ["users","sessions","views"].forEach(k=>{const id=k[0].toUpperCase()+k.slice(1);spark("s"+id,ds.map(x=>x[k]));delta("d"+id,ds.map(x=>x[k]))});
   const lo={day:"numeric",month:"long"},lf={day:"numeric",month:"long",year:"numeric"};
   if(ds.length){
     $("range").textContent="Zeitraum "+fd(ds[0].d,lo)+" bis "+fd(ds[ds.length-1].d,lf)+" ("+ds.length+" Tage)"+(d.generated?" · Stand "+new Date(d.generated).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+" Uhr":"");
     const withData=rows.length;
-    $("cov").textContent="Gemessene Tage mit Aktivität: "+withData+" von "+ds.length+(withData?" ("+fd(rows[0].d,{day:"numeric",month:"numeric"})+" bis "+fd(rows[withData-1].d,{day:"numeric",month:"numeric"})+")":"")+". Tage ohne Eintrag zählen als 0.";
+    $("cov").textContent="Gemessene Tage mit Aktivität: "+withData+" von "+ds.length+" Tagen im Abfragezeitraum"+(withData?" ("+fd(rows[0].d,{day:"numeric",month:"numeric"})+" bis "+fd(rows[withData-1].d,{day:"numeric",month:"numeric"})+")":"")+". Für die übrigen Tage liegen keine Daten vor (nicht gemessen oder ohne Aktivität, aus der Quelle nicht unterscheidbar). Die Summen oben zählen nur die gemessenen Tage.";
   }
   $("fn").textContent="Aktive Nutzertage = Summe der täglich aktiven Nutzer. Wer an mehreren Tagen wiederkommt, wird mehrfach gezählt; das ist nicht die Zahl einzelner Personen.";
   let cur="users";
   function chart(){
-    const cw=$("cbox").clientWidth||innerWidth,W=cw<600?400:800,H=260,L=36,R=12,T=14,B=28,max=Math.max(1,...ds.map(x=>x[cur]));
+    const cw=$("cbox").clientWidth||innerWidth,W=cw<600?400:800,H=260,L=36,R=12,T=14,B=28,max=Math.max(1,...ds.filter(x=>x[cur]!=null).map(x=>x[cur]));
     const top=Math.max(4,Math.ceil(max/4)*4),n=ds.length,pw=W-L-R,ph=H-T-B;
     const X=i=>L+(n>1?i*pw/(n-1):pw/2),Y=v=>T+ph-(v/top)*ph;
     $("chart").setAttribute("viewBox","0 0 "+W+" "+H);
@@ -255,17 +261,21 @@ function render(d){
     for(let i=0;i<=4;i++){const v=top*i/4,y=Y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#dedee4"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#64646f">${fmt(Math.round(v))}</text>`}
     const step=Math.max(1,Math.ceil(n/7));
     ds.forEach((x,i)=>{if(i%step===0||i===n-1)g+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#64646f">${fd(x.d)}</text>`});
-    const pts=ds.map((x,i)=>[X(i),Y(x[cur])]);
-    const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
-    const area=n?`<path d="${line} L${X(n-1)},${T+ph} L${X(0)},${T+ph} Z" fill="url(#ga)"/>`:"";
-    $("chart").innerHTML=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7040cd" stop-opacity=".28"/><stop offset="1" stop-color="#7040cd" stop-opacity="0"/></linearGradient></defs>${g}${area}<path d="${line}" fill="none" stroke="#7040cd" stroke-width="2.5" stroke-linejoin="round"/><line id="cx" y1="${T}" y2="${T+ph}" stroke="#b9a0ec" stroke-dasharray="4 3" opacity="0"/><circle id="cd" r="5" fill="#fff" stroke="#7040cd" stroke-width="2.5" opacity="0"/><rect id="hit" x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/>`;
+    const pts=ds.map((x,i)=>x[cur]==null?null:[X(i),Y(x[cur])]);
+    let body="";
+    segs(pts).forEach(sg=>{
+      if(sg.length===1){body+=`<circle cx="${sg[0][0]}" cy="${sg[0][1]}" r="4" fill="#7040cd"/>`;return}
+      const l=sg.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+      body+=`<path d="${l} L${sg[sg.length-1][0]},${T+ph} L${sg[0][0]},${T+ph} Z" fill="url(#ga)"/><path d="${l}" fill="none" stroke="#7040cd" stroke-width="2.5" stroke-linejoin="round"/>`;
+    });
+    $("chart").innerHTML=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7040cd" stop-opacity=".28"/><stop offset="1" stop-color="#7040cd" stop-opacity="0"/></linearGradient></defs>${g}${body}<line id="cx" y1="${T}" y2="${T+ph}" stroke="#b9a0ec" stroke-dasharray="4 3" opacity="0"/><circle id="cd" r="5" fill="#fff" stroke="#7040cd" stroke-width="2.5" opacity="0"/><rect id="hit" x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/>`;
     const hit=$("chart").querySelector("#hit"),tt=$("tt");
     function move(ev){
       const r=$("chart").getBoundingClientRect(),cx=(ev.touches?ev.touches[0].clientX:ev.clientX);
       const rel=(cx-r.left)/r.width*W;let i=n>1?Math.round((rel-L)/pw*(n-1)):0;i=Math.max(0,Math.min(n-1,i));
-      const p=pts[i];$("cx").setAttribute("x1",p[0]);$("cx").setAttribute("x2",p[0]);$("cx").setAttribute("opacity",1);
-      $("cd").setAttribute("cx",p[0]);$("cd").setAttribute("cy",p[1]);$("cd").setAttribute("opacity",1);
-      tt.innerHTML=`${fd(ds[i].d,{weekday:"short",day:"numeric",month:"short"})}<br><b>${fmt(ds[i][cur])}</b> ${{users:"aktive Nutzer",sessions:"Sitzungen",views:"Aufrufe"}[cur]}`;
+      const p=pts[i]||[X(i),T+ph];$("cx").setAttribute("x1",p[0]);$("cx").setAttribute("x2",p[0]);$("cx").setAttribute("opacity",1);
+      $("cd").setAttribute("cx",p[0]);$("cd").setAttribute("cy",p[1]);$("cd").setAttribute("opacity",pts[i]?1:0);
+      tt.innerHTML=`${fd(ds[i].d,{weekday:"short",day:"numeric",month:"short"})}<br>${ds[i][cur]==null?"<b>keine Daten</b>":`<b>${fmt(ds[i][cur])}</b> ${{users:"aktive Nutzer",sessions:"Sitzungen",views:"Aufrufe"}[cur]}`}`;
       tt.style.left=Math.min(Math.max(p[0]/W*r.width,50),r.width-50)+"px";tt.style.top=(p[1]/H*r.height)+"px";tt.style.opacity=1;
     }
     function out(){tt.style.opacity=0;$("cx").setAttribute("opacity",0);$("cd").setAttribute("opacity",0)}
@@ -273,7 +283,7 @@ function render(d){
   }
   chart();window.__redraw=chart;
   $("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;cur=b.dataset.k;[...$("tabs").children].forEach(x=>x.classList.toggle("on",x===b));chart()};
-  $("daily").innerHTML="<tr><th>Datum</th><th>Aktive Nutzer</th><th>Sitzungen</th><th>Aufrufe</th></tr>"+ds.slice().reverse().map(x=>`<tr><td>${fd(x.d,{day:"2-digit",month:"2-digit",year:"numeric"})}</td><td>${fmt(x.users)}</td><td>${fmt(x.sessions)}</td><td>${fmt(x.views)}</td></tr>`).join("");
+  $("daily").innerHTML="<tr><th>Datum</th><th>Aktive Nutzer</th><th>Sitzungen</th><th>Aufrufe</th></tr>"+ds.filter(x=>x.users!=null).reverse().map(x=>`<tr><td>${fd(x.d,{day:"2-digit",month:"2-digit",year:"numeric"})}</td><td>${fmt(x.users)}</td><td>${fmt(x.sessions)}</td><td>${fmt(x.views)}</td></tr>`).join("");
   const list=(id,rows)=>{
     const max=Math.max(1,...rows.map(r=>r.m[0]));
     $(id).innerHTML=rows.length?rows.map(r=>`<li><span class="n">${esc(r.d[0])}</span><span class="c">${fmt(r.m[0])}</span><span class="bw"><i style="width:${Math.max(3,r.m[0]/max*100)}%"></i></span></li>`).join(""):'<li class="empty">Noch keine Daten.</li>';
