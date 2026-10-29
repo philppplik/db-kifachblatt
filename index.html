@@ -220,7 +220,7 @@ function delta(id,vals){
   const el=$(id);
   if(!h||!a){el.innerHTML=`<b>–</b>zweite Hälfte: ${fmt(b)}`;return}
   const p=Math.round((b-a)/a*100);
-  el.innerHTML=`<b class="${p>=0?"up":""}">${p>=0?"+":""}${p} %</b>jüngere vs. ältere 15 Tage`;
+  el.innerHTML=`<b class="${p>=0?"up":""}">${p>=0?"+":""}${p} %</b>jüngere vs. ältere Hälfte`;
 }
 function render(d){
   const ds=d.daily.map(r=>({d:pd(r.d[0]),raw:r.d[0],users:r.m[0],sessions:r.m[1],views:r.m[2]})).sort((a,b)=>String(a.raw).localeCompare(String(b.raw)));
