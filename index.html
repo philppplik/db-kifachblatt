@@ -4,56 +4,178 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffffff">
 <title>Dashboard - KI Fachblatt</title>
+<link rel="icon" href="https://kifachblatt.de/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="https://kifachblatt.de/apple-touch-icon.png">
 <style>
-:root{color-scheme:dark}
-body{margin:0;font:16px/1.5 system-ui,-apple-system,sans-serif;background:#0d1526;color:#e8ecf4}
-main{max-width:1100px;margin:0 auto;padding:48px 24px}
-h1{font-size:22px;font-weight:600;margin:0 0 8px}
-.sub{color:#aab4c8;margin:0 0 32px;font-size:14px}
-#gate{max-width:380px;margin:15vh auto 0;text-align:center}
-#gate input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:8px;border:1px solid #2a3752;background:#111c33;color:#e8ecf4;font-size:16px;margin-bottom:12px}
-#gate button{width:100%;background:#c9a84c;color:#0d1526;font-weight:600;padding:12px;border:0;border-radius:8px;font-size:16px;cursor:pointer}
-#gate button:hover{filter:brightness(1.1)}
-#err{color:#e0746a;font-size:14px;min-height:20px;margin-top:8px}
-#dash{display:none}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
-.card{background:#111c33;border-radius:12px;padding:20px}
-.card .v{font-size:28px;font-weight:700;color:#c9a84c}
-.card .l{color:#aab4c8;font-size:13px;margin-top:4px}
-section{background:#111c33;border-radius:12px;padding:20px;margin-bottom:24px}
-h2{font-size:15px;font-weight:600;margin:0 0 16px;color:#c9d4ea}
-table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{text-align:left;padding:6px 8px;border-bottom:1px solid #1d2a45;color:#c9d4ea}
-td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums}
-svg{width:100%;height:auto;display:block}
-footer{padding:16px;text-align:center;color:#5c6678;font-size:13px}
+:root{--bg:#fff;--bg2:#f6f7f9;--ink:#151519;--mute:#64646f;--line:#dedee4;--amber:#7040cd;--amber2:#56329a;--tint:#efe6ff;--serif:Georgia,'Times New Roman',serif;--sans:Arial,Helvetica,system-ui,sans-serif;--w:1240px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--sans);min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit}a:hover{color:var(--amber2)}
+::selection{background:#ddd0f8}
+.wrap{max-width:var(--w);margin:auto;padding:0 max(clamp(18px,5vw,32px),env(safe-area-inset-left))}
+.strip{background:var(--bg2);border-bottom:1px solid var(--line);font-size:11px;color:var(--mute)}
+.strip .wrap{display:flex;justify-content:space-between;padding-top:7px;padding-bottom:7px;gap:15px;flex-wrap:wrap}
+.strip a{text-decoration:none}
+header.mast{padding:23px 0;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:20}
+header.mast .wrap{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.logo{display:inline-flex;align-items:center;gap:9px;font-size:19px;letter-spacing:-.6px;font-weight:700;text-decoration:none;white-space:nowrap;background:#161616;color:#fff;padding:8px 16px;border-radius:30px}
+.logo span{color:#b78dff;margin:0 -6px}
+.logo:hover{color:#fff}
+.logo-mark{display:block;width:22px;height:22px}
+nav.main{display:flex;gap:4px;background:#eeeef1;padding:4px;border-radius:30px;font-size:13px;margin-left:auto}
+nav.main a{padding:5px 16px;text-decoration:none;border-radius:24px}
+nav.main a:hover{background:#fff;color:#111}
+nav.main a.on{background:#fff;color:var(--amber2);font-weight:700}
+.burger{display:none;width:42px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;margin-left:auto}
+.burger span{display:block;width:18px;height:2px;background:var(--ink);border-radius:2px}
+.eyebrow{font-size:11px;letter-spacing:.08em;color:var(--amber);text-transform:uppercase;font-weight:700}
+.btn{display:inline-block;background:#181818;color:#fff;border:1px solid #181818;padding:11px 20px;border-radius:7px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none}
+.btn:hover{background:#39303f;color:#fff}
+.btn.ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--bg2);color:var(--ink)}
+main{flex:1}
+.hero{padding:56px 0 30px}
+.hero h1{font:400 clamp(36px,5.2vw,62px)/1.06 var(--serif);letter-spacing:-2.2px;margin:16px 0 12px}
+.hero .lead{max-width:640px;font-size:18px;line-height:1.5;color:var(--mute);margin:0}
+/* gate */
+#gate{max-width:440px;margin:6px 0 90px;border:1px solid var(--line);border-radius:12px;padding:28px;background:#fff;box-shadow:0 12px 40px -22px rgba(70,40,140,.35)}
+#gate h2{font:400 26px/1.2 var(--serif);letter-spacing:-.8px;margin:0 0 6px}
+#gate p{margin:0 0 18px;font-size:14px;color:var(--mute)}
+#gate label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.pwrow{display:flex;gap:8px;margin-bottom:12px}
+#pw{flex:1;min-width:0;padding:12px 14px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:16px;font-family:inherit}
+#pw:focus{outline:2px solid #b9a0ec;outline-offset:1px;border-color:var(--amber)}
+#gate .btn{width:100%;padding:13px;font-size:15px;background:var(--amber);border-color:var(--amber)}
+#gate .btn:hover{background:var(--amber2)}
+#show{width:auto!important;padding:0 14px!important;font-size:13px!important;background:#fff!important;color:var(--ink)!important;border-color:var(--line)!important}
+#err{color:#b3261e;font-size:14px;min-height:20px;margin-top:10px}
+.lock-note{display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-size:12px;color:var(--mute);line-height:1.5}
+#wait{display:none;color:var(--mute);max-width:520px}
+/* dashboard */
+#dash{display:none;padding-bottom:70px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px}
+.bar .range{font-size:13px;color:var(--mute)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:22px}
+.card{border:1px solid var(--line);border-radius:10px;padding:20px 22px;background:#fff}
+.card .l{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--mute)}
+.card .v{font:400 44px/1.1 var(--serif);letter-spacing:-1.6px;margin:10px 0 8px;color:var(--ink)}
+.card .d{font-size:12px;color:var(--mute)}
+.card .d b{display:inline-block;padding:1px 8px;border-radius:20px;font-weight:700;margin-right:6px;background:var(--bg2)}
+.card .d b.up{background:var(--tint);color:var(--amber2)}
+.card svg{width:100%;height:34px;display:block;margin-top:12px}
+.panel{border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:22px;background:#fff}
+.panel h2{font:400 24px/1.2 var(--serif);letter-spacing:-.6px;margin:0 0 4px}
+.panel .sub{font-size:13px;color:var(--mute);margin:0 0 16px}
+.tabs{display:inline-flex;gap:4px;background:#eeeef1;padding:4px;border-radius:30px;font-size:12px;margin:0 0 14px}
+.tabs button{border:0;background:transparent;font:inherit;padding:5px 14px;border-radius:24px;cursor:pointer;color:var(--ink)}
+.tabs button.on{background:#fff;color:var(--amber2);font-weight:700}
+.chartbox{position:relative}
+#chart{width:100%;height:auto;display:block;overflow:visible;touch-action:pan-y}
+.tt{position:absolute;pointer-events:none;background:#161616;color:#fff;font-size:12px;padding:7px 10px;border-radius:7px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .12s;z-index:5}
+.tt b{color:#d3bcff}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.cols>.panel{margin:0}
+.rows{list-style:none;margin:0;padding:0}
+.rows li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:9px 0;font-size:14px;border-bottom:1px solid var(--line)}
+.rows li:last-child{border-bottom:0}
+.rows .n{overflow-wrap:anywhere;line-height:1.35}
+.rows .c{font-variant-numeric:tabular-nums;font-weight:700}
+.rows .bw{grid-column:1/-1;height:6px;background:var(--bg2);border-radius:6px;overflow:hidden}
+.rows .bw i{display:block;height:100%;background:linear-gradient(90deg,#b78dff,var(--amber));border-radius:6px}
+.empty{color:var(--mute);font-size:14px;padding:10px 0}
+details.data{margin-top:12px;font-size:13px}
+details.data summary{cursor:pointer;color:var(--amber2)}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+td:not(:first-child),th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+/* footer (same as kifachblatt.de) */
+footer.kfbf{padding:52px 0 30px;border-top:1px solid var(--line);background:#fff}
+footer.kfbf .kfbf-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,2.9fr);gap:56px}
+footer.kfbf .kfbf-logo{display:inline-flex;align-items:center;font-size:17px;letter-spacing:-.5px;font-weight:700;background:#161616;color:#fff;padding:8px 16px;border-radius:30px;text-decoration:none}
+footer.kfbf .kfbf-logo img{margin-right:8px}
+footer.kfbf .kfbf-logo span{color:#b78dff}
+footer.kfbf .kfbf-logo:hover{color:#fff}
+footer.kfbf .kfbf-brand p{margin:16px 0 0;max-width:300px;font-size:13px;line-height:1.6}
+footer.kfbf .kfbf-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:28px}
+footer.kfbf h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 12px}
+footer.kfbf .kfbf-cols a{display:block;padding:4px 0;font-size:13px;line-height:1.4;text-decoration:none}
+footer.kfbf .kfbf-cols a:hover{text-decoration:underline}
+footer.kfbf .proj{margin:34px 0 0;padding-top:20px;border-top:1px solid var(--line);font-size:11px}
+footer.kfbf .proj b{display:block;margin-bottom:4px}
+footer.kfbf .note{margin:16px 0 0;font-size:11px;color:var(--mute)}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+@media(max-width:700px){
+ header.mast{padding:14px 0}
+ .burger{display:inline-flex}
+ .logo{font-size:17px}
+ .js nav.main{display:none;flex:0 0 100%;flex-direction:column;background:#fff;border-radius:0;padding:6px 0 0;gap:0;font-size:16px;margin:0}
+ .js nav.main.open{display:flex}
+ .js nav.main a{padding:13px 4px;border-radius:0;border-bottom:1px solid var(--line)}
+ .hero{padding:34px 0 18px}
+ .hero .lead{font-size:16px}
+ #gate{padding:22px;margin-bottom:60px}
+ .card .v{font-size:38px}
+ .panel{padding:18px 16px}
+ footer.kfbf{padding:40px 0 24px}
+ footer.kfbf .kfbf-top{grid-template-columns:1fr;gap:32px}
+ footer.kfbf .kfbf-cols{grid-template-columns:1fr 1fr;gap:24px 18px}
+}
 </style>
 </head>
 <body>
+<div class="strip"><div class="wrap"><span>Privates Analytics-Dashboard · nicht für die Öffentlichkeit</span><a href="https://kifachblatt.de/">Zur Website kifachblatt.de</a></div></div>
+<header class="mast"><div class="wrap"><a class="logo" href="https://kifachblatt.de/"><img class="logo-mark" src="https://kifachblatt.de/assets/logo-mark-white.svg" alt="" width="22" height="22">KI<span>·</span>Fachblatt</a>
+<button type="button" class="burger" aria-label="Menü" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
+<nav class="main" id="menu" aria-label="Hauptnavigation"><a class="on" href="/">Dashboard</a><a href="https://kifachblatt.de/news/">KI-News</a><a href="https://kifachblatt.de/#themen">Themen</a><a href="https://kifachblatt.de/modell-atlas">Atlas</a><a href="https://kifachblatt.de/glossar">Glossar</a><a href="https://kifachblatt.de/ueber">Über</a></nav></div></header>
 <main>
-<h1>KI Fachblatt - Analytics</h1>
-<p class="sub">Privates Dashboard. Letzte 30 Tage, aktualisiert alle 6 Stunden.</p>
-<p id="wait" style="display:none;color:#aab4c8">Das Dashboard wird gerade auf eine verschlüsselte Verbindung (HTTPS) umgestellt. Bitte später erneut über https:// aufrufen.</p>
+<div class="wrap">
+<section class="hero">
+<div class="eyebrow">Analytics · privat</div>
+<h1>Dashboard</h1>
+<p class="lead">Wer liest KI Fachblatt? Nutzer, Sitzungen und Seitenaufrufe der letzten 30 Tage, alle 6 Stunden aktualisiert.</p>
+</section>
+<p id="wait">Das Dashboard wird gerade auf eine verschlüsselte Verbindung (HTTPS) umgestellt. Bitte später erneut über https:// aufrufen.</p>
 <form id="gate" autocomplete="on">
-<label for="pw" style="display:block;text-align:left;color:#aab4c8;font-size:14px;margin-bottom:6px">Passwort</label>
-<input id="pw" name="password" type="password" autocomplete="current-password" required>
-<button type="submit">Dashboard öffnen</button>
-<div id="err"></div>
+<h2>Passwort eingeben</h2>
+<p>Die Daten liegen verschlüsselt vor und werden nur in deinem Browser entschlüsselt.</p>
+<label for="pw">Passwort</label>
+<div class="pwrow"><input id="pw" name="password" type="password" autocomplete="current-password" required><button type="button" class="btn" id="show" aria-label="Passwort anzeigen">Zeigen</button></div>
+<button type="submit" class="btn">Dashboard öffnen</button>
+<div id="err" role="alert"></div>
+<div class="lock-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Ende-zu-Ende verschlüsselt (AES-256-GCM). Keine Cookies, keine Messung auf dieser Seite.</span></div>
 </form>
 <div id="dash">
+<div class="bar"><span class="range" id="range"></span><button type="button" class="btn ghost" id="lock">Sperren</button></div>
 <div class="cards">
-<div class="card"><div class="v" id="kUsers">-</div><div class="l">Aktive Nutzer (30 Tage)</div></div>
-<div class="card"><div class="v" id="kSessions">-</div><div class="l">Sitzungen (30 Tage)</div></div>
-<div class="card"><div class="v" id="kViews">-</div><div class="l">Seitenaufrufe (30 Tage)</div></div>
+<div class="card"><div class="l">Aktive Nutzer</div><div class="v" id="kUsers">-</div><div class="d" id="dUsers"></div><svg id="sUsers" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+<div class="card"><div class="l">Sitzungen</div><div class="v" id="kSessions">-</div><div class="d" id="dSessions"></div><svg id="sSessions" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+<div class="card"><div class="l">Seitenaufrufe</div><div class="v" id="kViews">-</div><div class="d" id="dViews"></div><svg id="sViews" viewBox="0 0 200 34" preserveAspectRatio="none" aria-hidden="true"></svg></div>
 </div>
-<section><h2>Nutzer pro Tag</h2><svg id="chart" viewBox="0 0 800 220" role="img" aria-label="Nutzer pro Tag"></svg></section>
-<section><h2>Top-Seiten</h2><table id="pages"></table></section>
-<section><h2>Top-Quellen</h2><table id="sources"></table></section>
+<section class="panel">
+<h2>Verlauf pro Tag</h2>
+<p class="sub">Tippen oder darüberfahren für Details.</p>
+<div class="tabs" role="tablist" id="tabs"><button class="on" data-k="users" role="tab">Nutzer</button><button data-k="sessions" role="tab">Sitzungen</button><button data-k="views" role="tab">Aufrufe</button></div>
+<div class="chartbox" id="cbox"><svg id="chart" viewBox="0 0 800 260" role="img" aria-label="Verlauf pro Tag"></svg><div class="tt" id="tt"></div></div>
+<details class="data"><summary>Tageswerte als Tabelle</summary><div class="tw"><table id="daily"></table></div></details>
+</section>
+<div class="cols">
+<section class="panel"><h2>Top-Seiten</h2><p class="sub">Meistgelesen, nach Aufrufen.</p><ul class="rows" id="pages"></ul></section>
+<section class="panel"><h2>Top-Quellen</h2><p class="sub">Woher die Sitzungen kommen.</p><ul class="rows" id="sources"></ul></section>
+</div>
+</div>
 </div>
 </main>
-<footer>Daten nur verschlüsselt gespeichert; Entschlüsselung lokal im Browser. Es werden keine Cookies gesetzt und nichts gemessen.</footer>
+<footer class="kfbf"><div class="wrap"><div class="kfbf-top"><div class="kfbf-brand"><a class="kfbf-logo" href="https://kifachblatt.de/"><img class="logo-mark" src="https://kifachblatt.de/assets/logo-mark-white.svg" alt="" width="22" height="22">KI<span>·</span>Fachblatt</a><p>Einordnen statt Hype. Ein deutschsprachiges Fachmagazin über künstliche Intelligenz, von Philipp Paulik.</p></div><div class="kfbf-cols"><div><h4>Lesen</h4><a href="https://kifachblatt.de/glossar">Glossar</a><a href="https://kifachblatt.de/llm-kostenrechner">LLM-Kostenrechner</a><a href="https://kifachblatt.de/berichte">KI-Tagesbericht (PDF)</a><a href="https://kifachblatt.de/feed.xml">RSS-Feed</a></div><div><h4>Verzeichnis</h4><a href="https://kifachblatt.de/unternehmen">Unternehmens-Portraits</a><a href="https://kifachblatt.de/ki-modelle">KI-Modell-Portraits</a><a href="https://kifachblatt.de/modell-atlas">Modell-Atlas</a><a href="https://kifachblatt.de/benchmarks">Benchmark-Portraits</a></div><div><h4>Redaktion</h4><a href="https://kifachblatt.de/ueber">Über das Magazin</a><a href="https://kifachblatt.de/redaktion">Redaktion</a><a href="https://kifachblatt.de/transparenz">KI-Transparenz</a><a href="https://kifachblatt.de/quellen">Quellen</a></div><div><h4>Rechtliches</h4><a href="https://kifachblatt.de/impressum">Impressum</a><a href="https://kifachblatt.de/datenschutz">Datenschutz</a><a href="https://kifachblatt.de/cookies">Cookies &amp; Einstellungen</a><a href="https://philipp-paulik.de">Philipp Paulik</a></div></div></div><p class="proj"><b>Projekte von Philipp Paulik:</b> <a href="https://pblock.philipp-paulik.de">pBlock</a> · <a href="https://custmtab.philipp-paulik.de">cust*m Tab</a> · <a href="https://zwep.philipp-paulik.de">ZWEP</a> · <a href="https://flower.philipp-paulik.de">Flower</a> · <a href="https://ct.philipp-paulik.de">ct</a> · <a href="https://plane.philipp-paulik.de">plane</a></p><p class="note">Privates Dashboard, nicht indexiert. Daten nur verschlüsselt gespeichert, Entschlüsselung lokal im Browser. © 2026 Philipp Paulik</p></div></footer>
 <script>
+document.documentElement.classList.add("js");
+(function(){var b=document.querySelector(".burger"),m=document.getElementById("menu");function c(){m.classList.remove("open");b.setAttribute("aria-expanded","false")}
+b.addEventListener("click",function(){var o=m.classList.toggle("open");b.setAttribute("aria-expanded",o?"true":"false")});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")c()});m.addEventListener("click",function(e){if(e.target.tagName==="A")c()})})();
 const $=id=>document.getElementById(id);
 async function derive(pw,salt){
   const enc=new TextEncoder();
@@ -61,34 +183,84 @@ async function derive(pw,salt){
   return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
 }
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-if(location.protocol!=="https:"){$("gate").style.display="none";$("wait").style.display="block";}
+$("show").addEventListener("click",()=>{const t=$("pw").type==="password";$("pw").type=t?"text":"password";$("show").textContent=t?"Verbergen":"Zeigen"});
+if(location.protocol!=="https:"&&location.hostname!=="localhost"&&location.hostname!=="127.0.0.1"){$("gate").style.display="none";$("wait").style.display="block";}
 else $("gate").addEventListener("submit",async e=>{
   e.preventDefault();
   $("err").textContent="";
+  const btn=$("gate").querySelector("button[type=submit]");btn.disabled=true;btn.textContent="Entschlüssele …";
   try{
     const r=await fetch("data/analytics.json.enc",{cache:"no-store"});
     if(!r.ok)throw new Error("Daten noch nicht verfügbar");
     const p=await r.json();
     const key=await derive($("pw").value,b64(p.salt));
     const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(p.iv)},key,b64(p.ct));
-    render(JSON.parse(new TextDecoder().decode(pt)));
+    const data=JSON.parse(new TextDecoder().decode(pt));
+    $("pw").value="";
+    render(data);
     $("gate").style.display="none";
     $("dash").style.display="block";
+    window.scrollTo(0,0);
   }catch(_){$("err").textContent="Passwort falsch oder Daten nicht verfügbar.";}
+  btn.disabled=false;btn.textContent="Dashboard öffnen";
 });
+$("lock").addEventListener("click",()=>location.reload());
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function fmt(n){return n.toLocaleString("de-DE");}
+function pd(s){s=String(s);if(/^\d{8}$/.test(s))return new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));const d=new Date(s);return isNaN(d)?null:d}
+function fd(d,o){return d?d.toLocaleDateString("de-DE",o||{day:"2-digit",month:"2-digit"}):""}
+function spark(id,vals){
+  const max=Math.max(1,...vals),n=vals.length,W=200,H=34;
+  const pts=vals.map((v,i)=>[n>1?i*W/(n-1):W/2,H-3-(v/max)*(H-8)]);
+  const l=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+  $(id).innerHTML=`<path d="${l} L${W},${H} L0,${H} Z" fill="#7040cd1f"/><path d="${l}" fill="none" stroke="#7040cd" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+}
+function delta(id,vals){
+  const n=vals.length,h=Math.floor(n/2),a=vals.slice(0,h).reduce((x,y)=>x+y,0),b=vals.slice(h).reduce((x,y)=>x+y,0);
+  const el=$(id);
+  if(!h||!a){el.innerHTML=`<b>–</b>zweite Hälfte: ${fmt(b)}`;return}
+  const p=Math.round((b-a)/a*100);
+  el.innerHTML=`<b class="${p>=0?"up":""}">${p>=0?"+":""}${p} %</b>jüngere vs. ältere 15 Tage`;
+}
 function render(d){
-  const ds=d.daily.map(r=>({date:r.d[0],users:r.m[0],sessions:r.m[1],views:r.m[2]}));
-  $("kUsers").textContent=fmt(ds.reduce((a,b)=>a+b.users,0));
-  $("kSessions").textContent=fmt(ds.reduce((a,b)=>a+b.sessions,0));
-  $("kViews").textContent=fmt(ds.reduce((a,b)=>a+b.views,0));
-  const W=800,H=220,P=30,max=Math.max(1,...ds.map(x=>x.users));
-  const pts=ds.map((x,i)=>[P+i*(W-2*P)/Math.max(1,ds.length-1),H-P-(x.users/max)*(H-2*P)]);
-  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
-  $("chart").innerHTML=`<path d="${line}" fill="none" stroke="#c9a84c" stroke-width="2"/><path d="${line} L${pts[pts.length-1][0]},${H-P} L${pts[0][0]},${H-P} Z" fill="#c9a84c22"/>`;
-  const tbl=(id,rows,a,b)=>{$(id).innerHTML=`<tr><th>${a}</th><th>${b}</th></tr>`+rows.map(r=>`<tr><td>${r.d[0].replace(/</g,"&lt;")}</td><td>${fmt(r.m[0])}</td></tr>`).join("");};
-  tbl("pages",d.pages,"Seite","Aufrufe");
-  tbl("sources",d.sources,"Quelle","Sitzungen");
+  const ds=d.daily.map(r=>({d:pd(r.d[0]),raw:r.d[0],users:r.m[0],sessions:r.m[1],views:r.m[2]})).sort((a,b)=>String(a.raw).localeCompare(String(b.raw)));
+  const sum=k=>ds.reduce((a,b)=>a+b[k],0);
+  $("kUsers").textContent=fmt(sum("users"));$("kSessions").textContent=fmt(sum("sessions"));$("kViews").textContent=fmt(sum("views"));
+  ["users","sessions","views"].forEach(k=>{const id=k[0].toUpperCase()+k.slice(1);spark("s"+id,ds.map(x=>x[k]));delta("d"+id,ds.map(x=>x[k]))});
+  if(ds.length)$("range").textContent=fd(ds[0].d,{day:"numeric",month:"long"})+" bis "+fd(ds[ds.length-1].d,{day:"numeric",month:"long",year:"numeric"})+" · "+ds.length+" Tage"+(d.generated?" · Stand "+new Date(d.generated).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+" Uhr":"");
+  let cur="users";
+  function chart(){
+    const W=innerWidth<600?400:800,H=260,L=36,R=12,T=14,B=28,max=Math.max(1,...ds.map(x=>x[cur]));
+    const top=Math.max(4,Math.ceil(max/4)*4),n=ds.length,pw=W-L-R,ph=H-T-B;
+    const X=i=>L+(n>1?i*pw/(n-1):pw/2),Y=v=>T+ph-(v/top)*ph;
+    let g="";
+    for(let i=0;i<=4;i++){const v=top*i/4,y=Y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#dedee4"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#64646f">${fmt(Math.round(v))}</text>`}
+    const step=Math.max(1,Math.ceil(n/7));
+    ds.forEach((x,i)=>{if(i%step===0||i===n-1)g+=`<text x="${X(i)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#64646f">${fd(x.d)}</text>`});
+    const pts=ds.map((x,i)=>[X(i),Y(x[cur])]);
+    const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
+    const area=n?`<path d="${line} L${X(n-1)},${T+ph} L${X(0)},${T+ph} Z" fill="url(#ga)"/>`:"";
+    $("chart").innerHTML=`<defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7040cd" stop-opacity=".28"/><stop offset="1" stop-color="#7040cd" stop-opacity="0"/></linearGradient></defs>${g}${area}<path d="${line}" fill="none" stroke="#7040cd" stroke-width="2.5" stroke-linejoin="round"/><line id="cx" y1="${T}" y2="${T+ph}" stroke="#b9a0ec" stroke-dasharray="4 3" opacity="0"/><circle id="cd" r="5" fill="#fff" stroke="#7040cd" stroke-width="2.5" opacity="0"/><rect id="hit" x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/>`;
+    const hit=$("chart").querySelector("#hit"),tt=$("tt");
+    function move(ev){
+      const r=$("chart").getBoundingClientRect(),cx=(ev.touches?ev.touches[0].clientX:ev.clientX);
+      const rel=(cx-r.left)/r.width*W;let i=n>1?Math.round((rel-L)/pw*(n-1)):0;i=Math.max(0,Math.min(n-1,i));
+      const p=pts[i];$("cx").setAttribute("x1",p[0]);$("cx").setAttribute("x2",p[0]);$("cx").setAttribute("opacity",1);
+      $("cd").setAttribute("cx",p[0]);$("cd").setAttribute("cy",p[1]);$("cd").setAttribute("opacity",1);
+      tt.innerHTML=`${fd(ds[i].d,{weekday:"short",day:"numeric",month:"short"})}<br><b>${fmt(ds[i][cur])}</b> ${{users:"Nutzer",sessions:"Sitzungen",views:"Aufrufe"}[cur]}`;
+      tt.style.left=Math.min(Math.max(p[0]/W*r.width,50),r.width-50)+"px";tt.style.top=(p[1]/H*r.height)+"px";tt.style.opacity=1;
+    }
+    function out(){tt.style.opacity=0;$("cx").setAttribute("opacity",0);$("cd").setAttribute("opacity",0)}
+    hit.addEventListener("mousemove",move);hit.addEventListener("mouseleave",out);hit.addEventListener("touchstart",move,{passive:true});hit.addEventListener("touchmove",move,{passive:true});hit.addEventListener("touchend",out);
+  }
+  chart();
+  $("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;cur=b.dataset.k;[...$("tabs").children].forEach(x=>x.classList.toggle("on",x===b));chart()};
+  $("daily").innerHTML="<tr><th>Datum</th><th>Nutzer</th><th>Sitzungen</th><th>Aufrufe</th></tr>"+ds.slice().reverse().map(x=>`<tr><td>${fd(x.d,{day:"2-digit",month:"2-digit",year:"numeric"})}</td><td>${fmt(x.users)}</td><td>${fmt(x.sessions)}</td><td>${fmt(x.views)}</td></tr>`).join("");
+  const list=(id,rows)=>{
+    const max=Math.max(1,...rows.map(r=>r.m[0]));
+    $(id).innerHTML=rows.length?rows.map(r=>`<li><span class="n">${esc(r.d[0])}</span><span class="c">${fmt(r.m[0])}</span><span class="bw"><i style="width:${Math.max(3,r.m[0]/max*100)}%"></i></span></li>`).join(""):'<li class="empty">Noch keine Daten.</li>';
+  };
+  list("pages",d.pages);list("sources",d.sources);
 }
 </script>
 </body>
