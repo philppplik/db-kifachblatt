@@ -174,7 +174,7 @@ footer.kfbf .note{margin:16px 0 0;font-size:11px;color:var(--mute)}
 </main>
 <footer class="kfbf"><div class="wrap"><div class="kfbf-top"><div class="kfbf-brand"><a class="kfbf-logo" href="https://kifachblatt.de/"><img class="logo-mark" src="https://kifachblatt.de/assets/logo-mark-white.svg" alt="" width="22" height="22">KI<span>·</span>Fachblatt</a><p>Einordnen statt Hype. Ein deutschsprachiges Fachmagazin über künstliche Intelligenz, von Philipp Paulik.</p></div><div class="kfbf-cols"><div><h4>Lesen</h4><a href="https://kifachblatt.de/glossar">Glossar</a><a href="https://kifachblatt.de/llm-kostenrechner">LLM-Kostenrechner</a><a href="https://kifachblatt.de/berichte">KI-Tagesbericht (PDF)</a><a href="https://kifachblatt.de/feed.xml">RSS-Feed</a></div><div><h4>Verzeichnis</h4><a href="https://kifachblatt.de/unternehmen">Unternehmens-Portraits</a><a href="https://kifachblatt.de/ki-modelle">KI-Modell-Portraits</a><a href="https://kifachblatt.de/modell-atlas">Modell-Atlas</a><a href="https://kifachblatt.de/benchmarks">Benchmark-Portraits</a></div><div><h4>Redaktion</h4><a href="https://kifachblatt.de/ueber">Über das Magazin</a><a href="https://kifachblatt.de/redaktion">Redaktion</a><a href="https://kifachblatt.de/transparenz">KI-Transparenz</a><a href="https://kifachblatt.de/quellen">Quellen</a></div><div><h4>Rechtliches</h4><a href="https://kifachblatt.de/impressum">Impressum</a><a href="https://kifachblatt.de/datenschutz">Datenschutz</a><a href="https://kifachblatt.de/cookies">Cookies &amp; Einstellungen</a><a href="https://philipp-paulik.de">Philipp Paulik</a></div></div></div><p class="proj"><b>Projekte von Philipp Paulik:</b> <a href="https://pblock.philipp-paulik.de">pBlock</a> · <a href="https://custmtab.philipp-paulik.de">cust*m Tab</a> · <a href="https://zwep.philipp-paulik.de">ZWEP</a> · <a href="https://flower.philipp-paulik.de">Flower</a> · <a href="https://ct.philipp-paulik.de">ct</a> · <a href="https://plane.philipp-paulik.de">plane</a></p><p class="note">Privates Dashboard, nicht indexiert. Daten nur verschlüsselt gespeichert, Entschlüsselung lokal im Browser. © 2026 Philipp Paulik</p></div></footer>
 <script>
-document.documentElement.classList.add("js");
+document.documentElement.classList.add("js");var _rt;window.addEventListener("resize",function(){clearTimeout(_rt);_rt=setTimeout(function(){if(window.__redraw&&$("dash").style.display==="block")window.__redraw()},150)});
 (function(){var b=document.querySelector(".burger"),m=document.getElementById("menu");function c(){m.classList.remove("open");b.setAttribute("aria-expanded","false")}
 b.addEventListener("click",function(){var o=m.classList.toggle("open");b.setAttribute("aria-expanded",o?"true":"false")});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")c()});m.addEventListener("click",function(e){if(e.target.tagName==="A")c()})})();
@@ -201,7 +201,7 @@ else $("gate").addEventListener("submit",async e=>{
     $("pw").value="";
     render(data);
     $("gate").style.display="none";
-    $("dash").style.display="block";
+    $("dash").style.display="block";if(window.__redraw)window.__redraw();
     window.scrollTo(0,0);
   }catch(_){$("err").textContent="Passwort falsch oder Daten nicht verfügbar.";}
   btn.disabled=false;btn.textContent="Dashboard öffnen";
@@ -247,9 +247,10 @@ function render(d){
   $("fn").textContent="Aktive Nutzertage = Summe der täglich aktiven Nutzer. Wer an mehreren Tagen wiederkommt, wird mehrfach gezählt; das ist nicht die Zahl einzelner Personen.";
   let cur="users";
   function chart(){
-    const W=innerWidth<600?400:800,H=260,L=36,R=12,T=14,B=28,max=Math.max(1,...ds.map(x=>x[cur]));
+    const cw=$("cbox").clientWidth||innerWidth,W=cw<600?400:800,H=260,L=36,R=12,T=14,B=28,max=Math.max(1,...ds.map(x=>x[cur]));
     const top=Math.max(4,Math.ceil(max/4)*4),n=ds.length,pw=W-L-R,ph=H-T-B;
     const X=i=>L+(n>1?i*pw/(n-1):pw/2),Y=v=>T+ph-(v/top)*ph;
+    $("chart").setAttribute("viewBox","0 0 "+W+" "+H);
     let g="";
     for(let i=0;i<=4;i++){const v=top*i/4,y=Y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="#dedee4"/><text x="${L-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#64646f">${fmt(Math.round(v))}</text>`}
     const step=Math.max(1,Math.ceil(n/7));
@@ -270,7 +271,7 @@ function render(d){
     function out(){tt.style.opacity=0;$("cx").setAttribute("opacity",0);$("cd").setAttribute("opacity",0)}
     hit.addEventListener("mousemove",move);hit.addEventListener("mouseleave",out);hit.addEventListener("touchstart",move,{passive:true});hit.addEventListener("touchmove",move,{passive:true});hit.addEventListener("touchend",out);
   }
-  chart();
+  chart();window.__redraw=chart;
   $("tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;cur=b.dataset.k;[...$("tabs").children].forEach(x=>x.classList.toggle("on",x===b));chart()};
   $("daily").innerHTML="<tr><th>Datum</th><th>Aktive Nutzer</th><th>Sitzungen</th><th>Aufrufe</th></tr>"+ds.slice().reverse().map(x=>`<tr><td>${fd(x.d,{day:"2-digit",month:"2-digit",year:"numeric"})}</td><td>${fmt(x.users)}</td><td>${fmt(x.sessions)}</td><td>${fmt(x.views)}</td></tr>`).join("");
   const list=(id,rows)=>{
